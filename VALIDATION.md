@@ -4,7 +4,7 @@ The package has been checked with unit tests, invariant scenarios, a local SQLit
 
 ## Local checks
 
-- Node tests: 27/27 passing
+- Node tests: 28/28 passing
 - Python server tests: 10/10 passing
 - Memory invariants: 200/200 passing across 40 narratives
 - 10,000-record in-memory benchmark: p50 39.62 ms, p95 46.81 ms, p99 51.79 ms
@@ -23,5 +23,9 @@ The experiment uses the pinned Open-Jev-2B checkpoint and the exact Qwen base re
 - Peak GPU allocation: about 3.72 GiB on a 15 GiB T4
 
 The tuning and evaluation data are synthetic fixtures. They validate the protocol, calibration path, and resource envelope. They do not claim task-success performance on a production agent workload.
+
+## Dogfood run
+
+`npm run dogfood` processed four CoFound-style events and produced a three-memory deployment context. It retained the user preference, the verified `DATABASE_URL` failure, and the staging restart procedure; it ignored the unverified assistant claim. A correction replaced `systemd` with `Docker`, and deleting the tool source removed the `DATABASE_URL` memory.
 
 Model references: [Open-Jev model card](https://huggingface.co/ZefanCai/Open-Jev-2B), [Open-Jev source](https://github.com/Zefan-Cai/Open-Jev), and [Modal GPU docs](https://modal.com/docs/guide/gpu).

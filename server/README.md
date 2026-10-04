@@ -26,6 +26,20 @@ The queue has 64 slots and an eight-request quota per authentication token. Rele
 
 Default logs do not include excerpts. Use metadata-only observability and disable access logs in remote deployments.
 
+## Native Open-Jev API
+
+The package can also call an existing native Open-Jev deployment or the hosted API directly. Set `OPENJEV_API_KEY`, optionally set `OPENJEV_URL`, and construct `OpenJevApiProvider`. It sends the memory decision as Noul or Choice questions to `/v1/systemone`, so no package server is required.
+
+```ts
+new OpenJevApiProvider({
+  url: process.env.OPENJEV_URL ?? 'https://api.openjev.sh',
+  apiKey: process.env.OPENJEV_API_KEY,
+  model: process.env.OPENJEV_MODEL ?? 'openjev',
+});
+```
+
+Use `HttpDecisionProvider` when you want the bounded `/v1/memory/decide` contract and the package server's scheduler, batching, and custom tuned head.
+
 ## Modal T4
 
 ```sh

@@ -31,6 +31,7 @@
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test test/*.test.mjs",
     "eval": "npm run build && node evals/run.mjs",
+    "dogfood": "npm run build && node evals/dogfood.mjs",
     "bench": "npm run build && node evals/bench.mjs",
     "prepack": "npm run build"
   },

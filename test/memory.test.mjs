@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createMemory, SqliteStore, HttpDecisionProvider, validateDecisionResult } from '../dist/index.js';
+import { createMemory, SqliteStore, HttpDecisionProvider, OpenJevApiProvider, validateDecisionResult } from '../dist/index.js';
 
 const project = { kind: 'project', id: 'p1' };
 const access = { principalId: 'alice', scopes: [project] };
@@ -202,6 +202,43 @@ test('malformed model results fail closed and remote transport requires HTTPS', 
   const input = { operation: 'relevance', context: '', candidates: [{ id: 'a', text: 'x' }], deadlineMs: 10 };
   for (const value of [{ model: 'wrong', decisions: [{ id: 'a', score: 1 }] }, { model: 'test', decisions: [{ id: 'a', score: NaN }] }, { model: 'test', decisions: [{ id: 'invented', score: 1 }] }]) assert.throws(() => validateDecisionResult(input, value, 'test'));
   assert.throws(() => new HttpDecisionProvider({ url: 'http://remote.test', token: 'x', identity: 'test' }), /HTTPS/);
+});
+
+test('native Open-Jev API provider supports hosted and self-hosted endpoints', async () => {
+  const originalFetch = globalThis.fetch;
+  let request;
+  globalThis.fetch = async (url, init) => {
+    request = { url: String(url), init };
+    const body = JSON.parse(init.body);
+    const relationship = body.questions.candidate_0.type === 'choice';
+    return new Response(JSON.stringify({
+      model: 'openjev',
+      answers: relationship
+        ? { candidate_0: { type: 'choice', choice: 'contradicts', probabilities: { same: 0.02, contradicts: 0.91, unrelated: 0.07 } } }
+        : { candidate_0: { type: 'noul', noul: 0.93 } },
+    }), { status: 200, headers: { 'content-type': 'application/json' } });
+  };
+  try {
+    const provider = new OpenJevApiProvider({ url: 'https://api.openjev.sh', apiKey: 'jev-test-key' });
+    const result = await provider.decide({
+      operation: 'retain', context: 'Keep durable project facts',
+      candidates: [{ id: 'fact', text: 'The staging service uses systemd.' }], deadlineMs: 1000,
+    }, AbortSignal.timeout(1000));
+    assert.equal(request.url, 'https://api.openjev.sh/v1/systemone');
+    assert.equal(request.init.headers.authorization, 'Bearer jev-test-key');
+    assert.equal(JSON.parse(request.init.body).questions.candidate_0.type, 'noul');
+    assert.equal(result.decisions[0].score, 0.93);
+
+    const relationProvider = new OpenJevApiProvider({ url: 'http://127.0.0.1:3000/v1/systemone', allowInsecureLoopback: true });
+    const relation = await relationProvider.decide({
+      operation: 'relationship', context: 'Same project',
+      candidates: [{ id: 'claim', text: 'The service uses Docker.', previous: 'The service uses systemd.' }], deadlineMs: 1000,
+    }, AbortSignal.timeout(1000));
+    assert.equal(request.url, 'http://127.0.0.1:3000/v1/systemone');
+    assert.equal(relation.decisions[0].relation, 'contradicts');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test('lease theft and revision changes reject an old worker commit', async t => {

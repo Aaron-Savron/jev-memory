@@ -55,6 +55,25 @@ const packet = await memory.prepare({
 // Handle budget_exceeded explicitly, then add packet.context as quoted context.
 ```
 
+## Use a Jev API directly
+
+If you have a hosted Jev key or a native Open-Jev server, use the `/v1/systemone` provider. The same code works for both by changing the URL and key. See the [Open-Jev API docs](https://openjev.sh/docs) for the native request shape.
+
+```ts
+import { createMemory, OpenJevApiProvider, SqliteStore } from '@svrn/jev-memory';
+
+const memory = createMemory({
+  store: new SqliteStore('./memory.sqlite'),
+  decisions: new OpenJevApiProvider({
+    url: process.env.OPENJEV_URL ?? 'https://api.openjev.sh',
+    apiKey: process.env.OPENJEV_API_KEY,
+    model: process.env.OPENJEV_MODEL ?? 'openjev',
+  }),
+});
+```
+
+For the CLI, set `OPENJEV_API_KEY` and optionally `OPENJEV_URL` and `OPENJEV_MODEL`. Use `JEV_MEMORY_URL`, `JEV_MEMORY_TOKEN`, and `JEV_MEMORY_MODEL` when calling this package's authenticated decision server instead. Remote URLs must use HTTPS. Loopback HTTP is allowed when explicitly enabled for local development.
+
 Without a decision provider, explicit supported memories and local retrieval work. Unstructured proposals remain pending. Supply your provider's tokenizer for exact token counts; the fallback uses UTF-8 bytes as a conservative token bound.
 
 Semantic reads and writes default to **shadow**. Reads preserve local ranking; writes remain pending. Set either to `active` after evaluating that model and policy on your workload. The default active thresholds are 0.6 for relevance and 0.9 for retention. These scores are not guarantees of correctness.
@@ -96,9 +115,12 @@ See [server/README.md](server/README.md) for Docker, Modal T4, and the experimen
 ```sh
 npm test
 npm run eval
+npm run dogfood
 npm run bench
 node examples/basic.mjs
 ```
+
+`npm run dogfood` runs a small end-to-end conversation through ingestion, retention, context preparation, correction, and source deletion. It uses a deterministic local provider by default. Set `OPENJEV_API_KEY` to run the same flow against the native Jev API.
 
 The engine supports extractive candidates and an optional background extractor. It does not automatically watch repository files, infer stable project identities, train on private conversations, promote successful workflows into procedures, or sync devices. A harness can supply verified spans, dependencies, and lifecycle events through the API.
 

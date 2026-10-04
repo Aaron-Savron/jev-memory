@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
-import { createMemory, HttpDecisionProvider, SqliteStore } from './index.js';
+import { createMemory, HttpDecisionProvider, OpenJevApiProvider, SqliteStore } from './index.js';
 import type { Scope } from './types.js';
 
 const args = process.argv.slice(2);
@@ -28,14 +28,22 @@ async function main() {
   const json = args.includes('--json'); if (json) args.splice(args.indexOf('--json'), 1);
   const [command, ...rest] = args;
   if (!command || command === 'help' || command === '--help') {
-    console.log('jev-memory <command> --db memory.sqlite --owner alice --scope project:app\n\nCommands: search <query>, context <request>, inspect <id>, record <event.json>,\n          drain, retry, correct <id> <text>, forget <id>, forget-source <id>,\n          explain <packet-id>, export, doctor\n\nUse --json for structured output. Repeat --scope for additional authorized scopes.\nContext: --budget 1800 --deadline 350. --active enables semantic decisions.'); return;
+    console.log('jev-memory <command> --db memory.sqlite --owner alice --scope project:app\n\nCommands: search <query>, context <request>, inspect <id>, record <event.json>,\n          drain, retry, correct <id> <text>, forget <id>, forget-source <id>,\n          explain <packet-id>, export, doctor\n\nUse --json for structured output. Repeat --scope for additional authorized scopes.\nContext: --budget 1800 --deadline 350. --active enables semantic decisions.\n\nProviders: JEV_MEMORY_URL + JEV_MEMORY_TOKEN + JEV_MEMORY_MODEL uses the package decision server.\n          OPENJEV_API_KEY + OPENJEV_URL (optional) calls native /v1/systemone directly.'); return;
   }
   if (!principalId && command !== 'doctor') throw new Error('Set --owner or JEV_MEMORY_OWNER');
   const access = { principalId: principalId ?? '_', scopes };
   const decisions = process.env.JEV_MEMORY_URL ? new HttpDecisionProvider({
     url: process.env.JEV_MEMORY_URL, token: process.env.JEV_MEMORY_TOKEN ?? '',
     identity: process.env.JEV_MEMORY_MODEL ?? '', allowInsecureLoopback: true,
-  }) : undefined;
+  }) : (process.env.OPENJEV_API_KEY || process.env.JEV_API_KEY || process.env.OPENJEV_URL || process.env.JEV_API_URL)
+    ? new OpenJevApiProvider({
+        url: process.env.OPENJEV_URL ?? process.env.JEV_API_URL,
+        apiKey: process.env.OPENJEV_API_KEY ?? process.env.JEV_API_KEY,
+        model: process.env.OPENJEV_MODEL ?? 'openjev',
+        identity: process.env.OPENJEV_MODEL ?? 'openjev',
+        allowInsecureLoopback: true,
+      })
+    : undefined;
   const memory = createMemory({ store: new SqliteStore(path), decisions, decisionTimeoutMs: deadlineMs,
     semanticReads: active ? 'active' : 'shadow', semanticWrites: active ? 'active' : 'shadow' });
   try {
