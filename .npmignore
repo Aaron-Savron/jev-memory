@@ -1,0 +1,9 @@
+server/__pycache__/
+server/results-*.json
+server/.venv/
+server/memory-head/head.pt
+dist/**/*.map
+test/
+evals/
+examples/
+.github/

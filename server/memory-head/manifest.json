@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "parentModel": "open-jev-2b@0c7aa498b1627be8da4acf34c863ff0ee0a92785/bd4118882f733574a3250a4b65fe4d884130c08b/reference-float16",
+  "headSha256": "065f6787fc2be7a7ba1090529bb8f15b70f3eb1e0fab2c2ea0b3dab8b9def605",
+  "temperature": 1.0,
+  "dtype": "float16",
+  "training": "frozen backbone and LoRA; scalar-head BCE with L2; 600 steps; calibration-only hyperparameter selection",
+  "learningRate": 0.001,
+  "metrics": {
+    "train": {
+      "baseline": {
+        "correct": 64,
+        "total": 128,
+        "acceptedAt09": 0,
+        "acceptedCorrectAt09": 0,
+        "brier": 0.3158253676154039
+      },
+      "tuned": {
+        "correct": 128,
+        "total": 128,
+        "acceptedAt09": 42,
+        "acceptedCorrectAt09": 42,
+        "brier": 0.011771757337999286
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "correct": 32,
+        "total": 64,
+        "acceptedAt09": 0,
+        "acceptedCorrectAt09": 0,
+        "brier": 0.3259457366220208
+      },
+      "tuned": {
+        "correct": 60,
+        "total": 64,
+        "acceptedAt09": 15,
+        "acceptedCorrectAt09": 15,
+        "brier": 0.07517432666926364
+      }
+    },
+    "test": {
+      "baseline": {
+        "correct": 48,
+        "total": 96,
+        "acceptedAt09": 0,
+        "acceptedCorrectAt09": 0,
+        "brier": 0.34959340351446283
+      },
+      "tuned": {
+        "correct": 84,
+        "total": 96,
+        "acceptedAt09": 24,
+        "acceptedCorrectAt09": 24,
+        "brier": 0.09378745638777149
+      }
+    }
+  },
+  "seconds": 12.945614451,
+  "limitations": "Synthetic template-family split. Test names and wording held out; task families overlap. Does not establish real-user precision, task success, or injection resistance."
+}

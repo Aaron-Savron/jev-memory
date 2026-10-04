@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tgz
+*.sqlite*
+.env
+__pycache__/
+.venv/
+server/results-*.json
+server/memory-head/head.pt

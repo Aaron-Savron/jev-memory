@@ -1,0 +1,38 @@
+{
+  "name": "@svrn/jev-memory",
+  "version": "0.1.0",
+  "description": "Evidence-backed agent memory with self-hosted Open-Jev decisions",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22.13" },
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "bin": { "jev-memory": "dist/cli.js" },
+  "files": [
+    "dist",
+    "server/app.py",
+    "server/backend.py",
+    "server/Dockerfile",
+    "server/fixtures.py",
+    "server/modal_app.py",
+    "server/modal_serve.py",
+    "server/protocol.py",
+    "server/README.md",
+    "server/requirements-model.txt",
+    "server/requirements.lock",
+    "server/requirements.txt",
+    "server/scheduler.py",
+    "server/test_server.py",
+    "server/training_data.py",
+    "server/tuning.py",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "eval": "npm run build && node evals/run.mjs",
+    "bench": "npm run build && node evals/bench.mjs",
+    "prepack": "npm run build"
+  },
+  "devDependencies": { "@types/node": "22.19.19", "typescript": "5.9.3" }
+}
