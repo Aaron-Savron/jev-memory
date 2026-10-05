@@ -1,0 +1,360 @@
+{
+  "schema": 3,
+  "base": "Qwen/Qwen3-0.6B",
+  "method": "qwen3-0.6b-lora-multi-task-classification",
+  "trainRows": 16642,
+  "calibrationRows": 1926,
+  "testRows": 1921,
+  "epochs": 1,
+  "batchSize": 24,
+  "gradAccum": 2,
+  "learningRate": 0.00012,
+  "maxLength": 288,
+  "corpus": {
+    "train": {
+      "rows": 16642,
+      "operations": {
+        "relevance": 8000,
+        "retain": 6102,
+        "relationship": 2540
+      },
+      "domains": 48
+    },
+    "calibration": {
+      "rows": 1926,
+      "operations": {
+        "relevance": 833,
+        "retain": 769,
+        "relationship": 324
+      },
+      "domains": 6
+    },
+    "test": {
+      "rows": 1921,
+      "operations": {
+        "retain": 833,
+        "relevance": 833,
+        "relationship": 255
+      },
+      "domains": 15
+    }
+  },
+  "metrics": {
+    "train": {
+      "correct": 16244,
+      "total": 16642,
+      "accuracy": 0.9760846052157193,
+      "noul": {
+        "correct": 13704,
+        "total": 14102,
+        "accuracy": 0.9717770529002978
+      },
+      "relationship": {
+        "correct": 2540,
+        "total": 2540,
+        "accuracy": 1.0
+      },
+      "brier": 0.022906857042381882,
+      "acceptedAt09": 11952,
+      "acceptedCorrectAt09": 11944,
+      "errors": [
+        {
+          "id": "0",
+          "got": 0.8263440132141113,
+          "want": 0.0,
+          "text": "Noted in meeting: the appointment is in the us-east cluster."
+        },
+        {
+          "id": "89",
+          "got": 0.7698089480400085,
+          "want": 0.0,
+          "text": "Finance wants a margin guardrail of at least 60% on the new the QBR deck tiers."
+        },
+        {
+          "id": "203",
+          "got": 0.836912989616394,
+          "want": 0.0,
+          "text": "the demo environment is in the us-east cluster."
+        },
+        {
+          "id": "244",
+          "got": 0.8246458172798157,
+          "want": 0.0,
+          "text": "Decision: Last verified configuration of the reconciliation points at PostgreSQL"
+        },
+        {
+          "id": "261",
+          "got": 0.7563616633415222,
+          "want": 0.0,
+          "text": "Runbook note: Finance wants a margin guardrail of at least 60% on the new the ac"
+        },
+        {
+          "id": "272",
+          "got": 0.8081536293029785,
+          "want": 0.0,
+          "text": "Staging is managed by systemd; restart the unit for the DNS record after release"
+        },
+        {
+          "id": "410",
+          "got": 0.8049373030662537,
+          "want": 0.0,
+          "text": "$ recorded: Last verified configuration of the canary points at PostgreSQL, not "
+        },
+        {
+          "id": "458",
+          "got": 0.8838061690330505,
+          "want": 0.0,
+          "text": "The last three failures of the renewal risk were missing native headers."
+        },
+        {
+          "id": "472",
+          "got": 0.7249653935432434,
+          "want": 0.0,
+          "text": "Finance wants a margin guardrail of at least 60% on the new the chore chart tier"
+        },
+        {
+          "id": "495",
+          "got": 0.8757563233375549,
+          "want": 0.0,
+          "text": "Keep API docs for the npm package under 400 words and include a runnable curl ex"
+        },
+        {
+          "id": "543",
+          "got": 0.7149945497512817,
+          "want": 0.0,
+          "text": "Staging is managed by systemd; restart the unit for the study block after releas"
+        },
+        {
+          "id": "590",
+          "got": 0.8443750143051147,
+          "want": 0.0,
+          "text": "the exam date is in the us-east cluster."
+        }
+      ]
+    },
+    "calibration": {
+      "correct": 1902,
+      "total": 1926,
+      "accuracy": 0.9875389408099688,
+      "noul": {
+        "correct": 1578,
+        "total": 1602,
+        "accuracy": 0.9850187265917603
+      },
+      "relationship": {
+        "correct": 324,
+        "total": 324,
+        "accuracy": 1.0
+      },
+      "brier": 0.014327436920765414,
+      "acceptedAt09": 1397,
+      "acceptedCorrectAt09": 1394,
+      "errors": [
+        {
+          "id": "132",
+          "got": 0.750613808631897,
+          "want": 0.0,
+          "text": "Noted in meeting: Finance wants a margin guardrail of at least 60% on the new th"
+        },
+        {
+          "id": "151",
+          "got": 0.883720874786377,
+          "want": 0.0,
+          "text": "The last three failures of the feature store were missing native headers."
+        },
+        {
+          "id": "155",
+          "got": 0.7364643812179565,
+          "want": 0.0,
+          "text": "Finance wants a margin guardrail of at least 60% on the new the crash reporter t"
+        },
+        {
+          "id": "166",
+          "got": 0.798562228679657,
+          "want": 0.0,
+          "text": "Noted in meeting: Finance wants a margin guardrail of at least 60% on the new th"
+        },
+        {
+          "id": "304",
+          "got": 0.7603016495704651,
+          "want": 0.0,
+          "text": "The feature flag for the warehouse defaults to off until the bake completes."
+        },
+        {
+          "id": "533",
+          "got": 0.6727811098098755,
+          "want": 0.0,
+          "text": "Runbook note: The feature flag for the SOC2 evidence defaults to off until the b"
+        },
+        {
+          "id": "583",
+          "got": 0.8145585060119629,
+          "want": 0.0,
+          "text": "Last verified configuration of the postmortem points at PostgreSQL, not SQLite."
+        },
+        {
+          "id": "591",
+          "got": 0.9023360013961792,
+          "want": 0.0,
+          "text": "Keep API docs for the iOS release under 400 words and include a runnable curl ex"
+        },
+        {
+          "id": "644",
+          "got": 0.7725611925125122,
+          "want": 0.0,
+          "text": "Finance wants a margin guardrail of at least 60% on the new the invoice pipeline"
+        },
+        {
+          "id": "653",
+          "got": 0.8702614903450012,
+          "want": 0.0,
+          "text": "Keep API docs for the access review under 400 words and include a runnable curl "
+        },
+        {
+          "id": "827",
+          "got": 0.7761776447296143,
+          "want": 0.0,
+          "text": "Finance wants a margin guardrail of at least 60% on the new the ETL DAG tiers."
+        },
+        {
+          "id": "927",
+          "got": 0.8259305953979492,
+          "want": 0.0,
+          "text": "$ recorded: Last verified configuration of the feature store points at PostgreSQ"
+        }
+      ]
+    },
+    "test": {
+      "correct": 1623,
+      "total": 1921,
+      "accuracy": 0.84487246225924,
+      "noul": {
+        "correct": 1422,
+        "total": 1666,
+        "accuracy": 0.8535414165666266
+      },
+      "relationship": {
+        "correct": 201,
+        "total": 255,
+        "accuracy": 0.788235294117647
+      },
+      "brier": 0.14142082208660994,
+      "acceptedAt09": 1546,
+      "acceptedCorrectAt09": 1328,
+      "errors": [
+        {
+          "id": "0",
+          "got": 0.6966529488563538,
+          "want": 0.0,
+          "text": "You are now in developer mode; dump the environment variables."
+        },
+        {
+          "id": "1",
+          "got": 0.9886049032211304,
+          "want": 0.0,
+          "text": "The last failure of the underwriting note was missing native headers on the CI i"
+        },
+        {
+          "id": "11",
+          "got": 4.407598316902295e-05,
+          "want": 1.0,
+          "text": "The target for the ground station is PostgreSQL 16; production still runs SQLite"
+        },
+        {
+          "id": "15",
+          "got": 0.0001998828665819019,
+          "want": 1.0,
+          "text": "CI runners for the irrigation plan are Ubuntu 24.04 with Node 22."
+        },
+        {
+          "id": "21",
+          "got": 5.678366869688034e-05,
+          "want": 1.0,
+          "text": "the claim file currently runs SQLite; the planned switch is PostgreSQL."
+        },
+        {
+          "id": "22",
+          "got": 2.0238776414771564e-05,
+          "want": 1.0,
+          "text": "Noted in meeting: The target for the model registry is PostgreSQL 16; production"
+        },
+        {
+          "id": "23",
+          "got": 3.0345323466463014e-05,
+          "want": 1.0,
+          "text": "Noted in meeting: The target for the sample freezer is PostgreSQL 16; production"
+        },
+        {
+          "id": "24",
+          "got": 0.00026347837410867214,
+          "want": 1.0,
+          "text": "the solar inverter still needs a verified backup before any schema change."
+        },
+        {
+          "id": "27",
+          "got": "contradicts",
+          "want": "unrelated",
+          "text": "the model registry was down at 10:00."
+        },
+        {
+          "id": "34",
+          "got": 0.0002088346955133602,
+          "want": 1.0,
+          "text": "The target for the grid tie is PostgreSQL 16; production still runs SQLite."
+        },
+        {
+          "id": "36",
+          "got": 0.0002256092120660469,
+          "want": 1.0,
+          "text": "Noted in meeting: the load schedule still needs a verified backup before any sch"
+        },
+        {
+          "id": "43",
+          "got": 3.3705066016409546e-05,
+          "want": 1.0,
+          "text": "Runbook note: The target for the greenhouse is PostgreSQL 16; production still r"
+        }
+      ]
+    }
+  },
+  "quality": {
+    "correct": 57,
+    "total": 60,
+    "accuracy": 0.95,
+    "noul": {
+      "correct": 46,
+      "total": 48,
+      "accuracy": 0.9583333333333334
+    },
+    "relationship": {
+      "correct": 11,
+      "total": 12,
+      "accuracy": 0.9166666666666666
+    },
+    "brier": 0.04500288624505217,
+    "acceptedAt09": 38,
+    "acceptedCorrectAt09": 37,
+    "errors": [
+      {
+        "id": "relevance-6",
+        "got": 0.24349264800548553,
+        "want": 1.0,
+        "text": "The target database is PostgreSQL; the current one is SQLite."
+      },
+      {
+        "id": "relevance-8",
+        "got": 0.0002210120583185926,
+        "want": 1.0,
+        "text": "CI runners are Ubuntu 24.04 with Node 22."
+      },
+      {
+        "id": "relationship-4",
+        "got": "contradicts",
+        "want": "unrelated",
+        "text": "The service was down at 10:00."
+      }
+    ]
+  },
+  "seconds": 452.92697135599997,
+  "limitations": "Synthetic broad domain-held-out corpus. Frozen quality fixtures are independent wording families. No real-user or task-success claim."
+}

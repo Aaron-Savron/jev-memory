@@ -4,4 +4,4 @@ transformers==5.10.2
 peft==0.19.1
 accelerate==1.13.0
 safetensors==0.6.2
-open-jev @ git+https://github.com/Zefan-Cai/Open-Jev.git@bd4118882f733574a3250a4b65fe4d884130c08b
+sentencepiece==0.2.1

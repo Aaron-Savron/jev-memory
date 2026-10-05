@@ -254,7 +254,11 @@ export class SqliteStore {
     // personal preference such as a drink choice out of every agent prompt.
     const mandatoryKinds = input.query.trim() ? "'constraint'" : "'constraint','preference'";
     const mandatory = this.#statement(`SELECT r.* FROM jmem_records r WHERE ${filters} AND json_extract(r.body,'$.kind') IN (${mandatoryKinds}) ORDER BY r.recorded_at DESC LIMIT 129`).all(...params) as Row[];
-    const terms = [...new Set(input.query.toLocaleLowerCase().match(/[\p{L}\p{N}_]{2,}/gu) ?? [])].slice(0, 32);
+    const rawTerms = [...new Set(input.query.toLocaleLowerCase().match(/[\p{L}\p{N}_]{2,}/gu) ?? [])];
+    // Stopwords like "the" match almost every sentence and drown real hits.
+    const STOP = new Set(['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one', 'our', 'out', 'has', 'have', 'this', 'that', 'with', 'from', 'they', 'been', 'said', 'each', 'which', 'their', 'will', 'other', 'about', 'many', 'then', 'them', 'these', 'some', 'would', 'make', 'like', 'into', 'him', 'time', 'very', 'when', 'come', 'could', 'more', 'than', 'its', 'also', 'after', 'use', 'how', 'who', 'did', 'get', 'got', 'why', 'let', 'put']);
+    const contentTerms = rawTerms.filter(t => !STOP.has(t));
+    const terms = (contentTerms.length ? contentTerms : rawTerms).slice(0, 32);
     const scopeTerms = input.scopes.map(s => '"' + hash([input.principalId, scopeKey(s)]) + '"').join(' OR ');
     const match = `scope_token:(${scopeTerms}) AND text:(${terms.map(t => '"' + t.replaceAll('"', '""') + '"').join(' OR ')})`;
     // CROSS JOIN fixes the loop order: traverse authorized FTS postings once, then

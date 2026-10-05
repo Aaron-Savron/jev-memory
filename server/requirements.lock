@@ -104,8 +104,6 @@ nvidia-nvjitlink-cu12==12.8.93
     #   torch
 nvidia-nvtx-cu12==12.8.90
     # via torch
-open-jev @ git+https://github.com/Zefan-Cai/Open-Jev.git@bd4118882f733574a3250a4b65fe4d884130c08b
-    # via -r server/requirements-model.txt
 packaging==26.3
     # via
     #   accelerate
@@ -142,6 +140,8 @@ safetensors==0.6.2
     #   accelerate
     #   peft
     #   transformers
+sentencepiece==0.2.1
+    # via -r server/requirements-model.txt
 setuptools==84.0.0
     # via
     #   torch

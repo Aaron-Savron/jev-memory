@@ -13,9 +13,9 @@ from modal_app import app, image, cache
 class DecisionService:
     @modal.enter()
     def load(self):
-        sys.path.insert(0, "/srv/jev-memory")
-        from backend import OpenJevBackend
-        self.backend = OpenJevBackend()
+        sys.path.insert(0, "/srv/memory")
+        from backend import MemoryBackend
+        self.backend = MemoryBackend()
         cache.commit()
 
     @modal.asgi_app()

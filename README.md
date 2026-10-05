@@ -1,6 +1,6 @@
 # Jev Memory
 
-Source-backed memory for agent harnesses. SQLite keeps the records locally. A self-hosted Open-Jev server decides which source spans are worth retaining and which memories help the current task.
+Source-backed memory for agent harnesses. SQLite keeps the records locally. A self-hosted decision server (Qwen3-0.6B + LoRA, trained on a broad multi-domain memory corpus) decides which source spans are worth retaining and which memories help the current task.
 
 Corrections retire old versions and invalidate dependent procedures. User preferences, project facts, conversation state, and tool outcomes have explicit scopes. A request to do something is different from evidence that it happened.
 

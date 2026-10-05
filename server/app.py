@@ -16,8 +16,8 @@ def create_app(backend_factory=None):
         if not os.environ.get("JEV_MEMORY_TOKEN") or len(os.environ["JEV_MEMORY_TOKEN"]) < 24:
             raise RuntimeError("Set JEV_MEMORY_TOKEN to a random token of at least 24 characters")
         if backend_factory is None:
-            from backend import OpenJevBackend
-            factory = OpenJevBackend
+            from backend import MemoryBackend
+            factory = MemoryBackend
         else:
             factory = backend_factory
         backend = await asyncio.to_thread(factory)
