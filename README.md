@@ -83,7 +83,8 @@ Semantic reads and writes default to **shadow**. Reads preserve local ranking; w
 ## Runtime behavior
 
 - Search uses authorized FTS postings and bounded candidates. Applicable constraints bypass semantic scoring.
-- Preferences can override matching general preferences in a more specific scope when subject/predicate keys are supplied.
+- Preferences are curated: only query-matching preferences join a task packet, so an unrelated personal preference does not crowd every prompt. Constraints always apply.
+- Preferences can override matching general preferences in a more specific scope when subject/predicate keys are supplied. A more specific preference masks its broader counterpart even when only the broader text matched the query.
 - `validAt` filters supplied validity intervals. `knownAt` selects the versions available at that recording time. Unknown dates remain unknown.
 - `revalidate(access, packet)` checks revisions, expiry, and dependencies before a harness uses remembered procedures.
 - Scoring has a deadline, a circuit breaker, and bounded caches. Outages use local retrieval. Late responses cannot restore deleted records.

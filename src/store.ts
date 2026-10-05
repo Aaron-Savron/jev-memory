@@ -249,7 +249,11 @@ export class SqliteStore {
       AND NOT EXISTS (SELECT 1 FROM jmem_dependencies dep JOIN jmem_records target ON target.id=dep.depends_on
         WHERE dep.record_id=r.id AND (target.status<>'active' OR (target.expires_at IS NOT NULL AND target.expires_at<=${validAt}) OR (target.valid_from IS NOT NULL AND target.valid_from>${validAt}) OR (target.valid_to IS NOT NULL AND target.valid_to<=${validAt})))`;
     const params = [...where.params, knownAt, knownAt, validAt, validAt, validAt];
-    const mandatory = this.#statement(`SELECT r.* FROM jmem_records r WHERE ${filters} AND json_extract(r.body,'$.kind') IN ('constraint','preference') ORDER BY r.recorded_at DESC LIMIT 129`).all(...params) as Row[];
+    // Constraints are always applicable. Preferences still need to match the
+    // request, unless this is an explicit empty-query browse. This keeps a
+    // personal preference such as a drink choice out of every agent prompt.
+    const mandatoryKinds = input.query.trim() ? "'constraint'" : "'constraint','preference'";
+    const mandatory = this.#statement(`SELECT r.* FROM jmem_records r WHERE ${filters} AND json_extract(r.body,'$.kind') IN (${mandatoryKinds}) ORDER BY r.recorded_at DESC LIMIT 129`).all(...params) as Row[];
     const terms = [...new Set(input.query.toLocaleLowerCase().match(/[\p{L}\p{N}_]{2,}/gu) ?? [])].slice(0, 32);
     const scopeTerms = input.scopes.map(s => '"' + hash([input.principalId, scopeKey(s)]) + '"').join(' OR ');
     const match = `scope_token:(${scopeTerms}) AND text:(${terms.map(t => '"' + t.replaceAll('"', '""') + '"').join(' OR ')})`;
@@ -261,6 +265,21 @@ export class SqliteStore {
       const record = this.#hydrate(row);
       const must = record.kind === 'constraint' || record.kind === 'preference';
       if (!map.has(record.id)) map.set(record.id, { record, mandatory: must, score: must ? 1 : Math.min(0.85, 0.35 + Math.abs(Number(row.rank ?? 0))) });
+    }
+    // A more-specific preference can mask a user preference even when only the
+    // user text matched the query. Pull same-slot counterparts so that mask runs.
+    const slots = new Map<string, [string | null, string | null, string]>();
+    for (const hit of map.values()) {
+      if (hit.record.kind === 'preference' && hit.record.predicate) slots.set(hash([hit.record.subject, hit.record.predicate, hit.record.modality]), [hit.record.subject, hit.record.predicate, hit.record.modality]);
+    }
+    if (slots.size) {
+      const clause = [...slots.keys()].map(() => `(json_extract(r.body,'$.subject') IS ? AND json_extract(r.body,'$.predicate') IS ? AND json_extract(r.body,'$.modality')=?)`).join(' OR ');
+      const rows = this.#statement(`SELECT r.* FROM jmem_records r WHERE ${filters} AND json_extract(r.body,'$.kind')='preference' AND (${clause}) LIMIT 32`).all(...params, ...[...slots.values()].flat()) as Row[];
+      for (const row of rows) {
+        const record = this.#hydrate(row);
+        if (map.has(record.id) || record.scope.kind === 'user') continue;
+        map.set(record.id, { record, mandatory: true, score: 1 });
+      }
     }
     // More-specific preferences mask matching user preferences without deleting them.
     const overrides = new Set([...map.values()].filter(h => h.record.scope.kind !== 'user' && h.record.predicate).map(h => hash([h.record.subject, h.record.predicate, h.record.modality])));

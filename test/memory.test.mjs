@@ -92,6 +92,15 @@ test('a project preference masks its global counterpart without deleting it', as
   assert.equal(m.search({ principalId: 'alice', scopes: [{ kind: 'user', id: 'alice' }], query: '' })[0].record.text, 'Keep documentation short');
 });
 
+test('unrelated preferences do not crowd a curated task packet', async t => {
+  const m = fixture(); t.after(() => m.close());
+  await add(m, event('tea', 'I prefer green tea.', { kind: 'preference', modality: 'desired' }, { scope: { kind: 'user', id: 'alice' } }));
+  await add(m, event('deploy', 'The staging app runs under systemd.', { kind: 'fact', modality: 'reported' }));
+  const packet = await m.prepare({ ...access, request: 'Fix the staging deployment', tokenBudget: 4000 });
+  assert.ok(packet.context.includes('systemd'));
+  assert.ok(!packet.context.includes('green tea'));
+});
+
 test('correction supersedes an old version and invalidates a transitive procedure', async t => {
   const m = fixture(); t.after(() => m.close());
   const old = await add(m, event('a', 'Deployment uses Docker', { subject: 'app', predicate: 'deployment' }));

@@ -19,7 +19,9 @@ for (let i = 0; i < 40; i++) {
   for (let j = 0; j < 12; j++) save(`noise-${j}`, `Unrelated conversation topic ${j}.`);
   const packet = await m.prepare({ ...access, request: 'deployment', tokenBudget: 4000 });
   assert.ok(packet.selected.some(s => s.id === old.id)); checks++;
-  assert.ok(packet.context.includes('concise documentation')); checks++;
+  assert.ok(!packet.context.includes('concise documentation')); checks++;
+  const prefPacket = await m.prepare({ ...access, request: 'documentation', tokenBudget: 4000 });
+  assert.ok(prefPacket.context.includes('concise documentation')); checks++;
   m.correct(access, old.id, old.revision, { id: 'fix', principalId: access.principalId, scope, source: 'user', text: 'The deployment uses systemd.', occurredAt: Date.now() });
   const next = await m.prepare({ ...access, request: 'deployment', tokenBudget: 4000 });
   assert.ok(next.context.includes('systemd') && !next.context.includes('Docker')); checks++;
@@ -29,5 +31,5 @@ for (let i = 0; i < 40; i++) {
   m.close();
 }
 console.log(JSON.stringify({ narratives: 40, invariantChecks: checks, passed: checks,
-  model: 'none', purpose: 'scope, older recall, preferences, correction propagation, source deletion',
+  model: 'none', purpose: 'scope, older recall, curated preferences, correction propagation, source deletion',
   limitation: 'Synthetic mechanical checks; not Jev quality or agent task success.' }, null, 2));
